@@ -33,8 +33,9 @@
       background: #f4d03f;
       color: #000;
       border-radius: 8px;
-      border: 2px solid #bfa76f;
+      font-weight: bold;
       text-decoration: none;
+      border: 2px solid #bfa76f;
       transition: background 0.3s;
     }
     .btn-voltar:hover {
@@ -83,6 +84,23 @@
       list-style: disc;
       margin-left: 20px;
     }
+    /* Novo estilo para o botão de acesso ao painel */
+    .btn-admin {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #f4d03f;
+      color: #000;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      border: 2px solid #bfa76f;
+      transition: background 0.3s;
+    }
+    .btn-admin:hover {
+      background: #ff9a00;
+      color: #000;
+    }
   </style>
 </head>
 <body>
@@ -125,8 +143,9 @@
               <li>🌀 Teleporte: Move 25% de XP de uma sala para outra.</li>
               <li>🧲 Imã: Rouba todos os Pets da outra turma por uma semana.</li>
               <li>🛡️ Paralisar: Impede 3 alunos de ganhar XP na outra sala durante uma semana</li>
-              <li>🔥 Oferenda: Ganha 300 XP sacrifiando 3 Pets.</li>
+              <li>🔥 Oferenda: Ganha 300 XP sacrificando 3 Pets.</li>
               <li>💫 Benção: Dobra o XP de três alunos.</li>
+            </ul>
         </ul>
       
         <h3>🛡️ Defesas</h3>
@@ -135,8 +154,6 @@
           <li><strong>Defesa Física:</strong> Anula o dano de um ataque físico.</li>
         </ul>
       </section>
-      
-      
 
     <section class="regras-area">
       <h2>📜 Regras da Loja</h2>
@@ -164,6 +181,10 @@
         <li>- Após a compra, a XP é debitada automaticamente.</li>
       </ul>
     </section>
+
+    <!-- Botão para o painel de administração -->
+    <a href="https://rpgtrigonometriacursinhov2.netlify.app/admin" class="btn-voltar">⚔️ Acessar Painel Mestre</a>
+
   </main>
 </body>
 </html>

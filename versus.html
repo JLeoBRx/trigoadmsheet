@@ -137,6 +137,27 @@
       <div class="xp-saldo" id="xpB">XP Coletivo: <strong>0000</strong></div>
     </div>
 
+    <!-- script de atualização de XP -->
+<script>
+  function updateXP(coluna, elementoId) {
+    const url = `https://docs.google.com/spreadsheets/d/1VLsqmgkH7YQ8_F0LdjSHk-_suYV9ioyCKCWka_ZGKQY/gviz/tq?tq=SELECT%20${coluna}&sheet=DadosSala`;
+    fetch(url)
+      .then(res => res.text())
+      .then(text => {
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        const valor = json.table.rows[0].c[0]?.v || 0;
+        document.getElementById(elementoId).innerHTML = `XP Coletivo: <strong>${valor}</strong>`;
+      })
+      .catch(err => {
+        console.error("Erro ao carregar dados:", err);
+        document.getElementById(elementoId).innerHTML = "Erro ao carregar XP";
+      });
+  }
+
+  updateXP("B", "xpA");
+  updateXP("C", "xpB");
+</script>
+
     <div class="arena-chat">
       <h2>💬 Chat Geral da Batalha</h2>
       <script id="cid0020000406753728089" data-cfasync="false" async src="//st.chatango.com/js/gz/emb.js" style="width: 250px;height: 350px;">{"handle":"chatgeraltrigo","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}</script>

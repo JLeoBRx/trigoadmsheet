@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arena de Batalha - Turma A vs Turma B</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'MedievalSharp', cursive;
+      background-color: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      background: #222;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #bfa76f;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #f4d03f;
+      font-size: 2.2em;
+    }
+
+    .btns-topo {
+      margin-top: 15px;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 20px;
+      background: #f4d03f;
+      color: #000;
+      font-weight: bold;
+      border: 2px solid #bfa76f;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn-voltar:hover {
+      background: #ff9a00;
+      color: #000;
+    }
+
+    main {
+      width: 90%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .clan-card {
+      background: #222;
+      border: 2px solid #bfa76f;
+      border-radius: 10px;
+      width: 100%;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .clan-card img {
+      width: 100%;
+      max-width: 300px;
+      border: 3px solid #888;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+
+    .xp-saldo {
+      background: #333;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid gold;
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+
+    .arena-chat {
+      width: 100%;
+      margin-top: 30px;
+      background: #222;
+      padding: 20px;
+      border: 2px solid #bfa76f;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .arena-chat h2 {
+      margin-bottom: 15px;
+    }
+
+    iframe, script {
+      width: 100%;
+      height: 400px;
+      border: none;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🏰 Arena de Batalha dos Clãs</h1>
+    <div class="btns-topo">
+      <a href="index.html" class="btn-voltar">🔙 Portal</a>
+      <a href="turmaa.html" class="btn-voltar">🛡️ Turma A</a>
+      <a href="turmab.html" class="btn-voltar">⚔️ Turma B</a>
+      <a href="loja.html" class="btn-voltar">🏪 Loja dos Clãs</a> <!-- Botão novo aqui -->
+    </div>
+  </header>
+
+  <main>
+    <div class="clan-card" id="turmaA">
+      <h2>🛡️ Clã da Turma A</h2>
+      <img src="public/base0.png" alt="Base da Turma A">
+      <div class="xp-saldo" id="xpA">XP Coletivo: <strong>0000</strong></div>
+    </div>
+
+    <div class="clan-card" id="turmaB">
+      <h2>⚔️ Clã da Turma B</h2>
+      <img src="public/base0.png" alt="Base da Turma B">
+      <div class="xp-saldo" id="xpB">XP Coletivo: <strong>0000</strong></div>
+    </div>
+
+    <div class="arena-chat">
+      <h2>💬 Chat Geral da Batalha</h2>
+      <script id="cid0020000406753728089" data-cfasync="false" async src="//st.chatango.com/js/gz/emb.js" style="width: 250px;height: 350px;">{"handle":"chatgeraltrigo","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}</script>
+    </div>
+  </main>
+
+  <script src="public/dadosXP.js"></script>
+  <script>
+    function calcularXP(turma) {
+      return dadosXP[turma].reduce((total, aluno) => {
+        return total + aluno.pontos + (aluno.nivel * 200);
+      }, 0);
+    }
+
+    document.getElementById("xpA").innerHTML = `XP Coletivo: <strong>${calcularXP("A")}</strong>`;
+    document.getElementById("xpB").innerHTML = `XP Coletivo: <strong>${calcularXP("B")}</strong>`;
+  </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏰 Loja dos Clãs</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'MedievalSharp', cursive;
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+    }
+
+    header {
+      background: #222;
+      padding: 20px;
+      border-bottom: 2px solid #bfa76f;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #f4d03f;
+    }
+
+    .btns-topo {
+      margin-top: 10px;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 20px;
+      background: #f4d03f;
+      color: #000;
+      border-radius: 8px;
+      border: 2px solid #bfa76f;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn-voltar:hover {
+      background: #ff9a00;
+      color: #000;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .roleta-area {
+      background: #222;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #bfa76f;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .roleta-area button {
+      background: #f4d03f;
+      color: #000;
+      font-weight: bold;
+      border: 2px solid #bfa76f;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .roleta-area button:hover {
+      background: #ff9a00;
+      color: #000;
+    }
+
+    .resultado {
+      margin-top: 20px;
+      font-size: 1.4em;
+      color: #f4d03f;
+      min-height: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🏰 Loja dos Clãs</h1>
+    <div class="btns-topo">
+      <a href="index.html" class="btn-voltar">🔙 Portal</a>
+      <a href="versus.html" class="btn-voltar">⚔️ Arena</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="roleta-area">
+      <h2>🐾 Roleta de Pets</h2>
+      <button onclick="girarRoleta('pets')">🎲 Girar Roleta</button>
+      <div class="resultado" id="resultado-pets"></div>
+    </section>
+
+    <section class="roleta-area">
+      <h2>📖 Roleta de Grimórios</h2>
+      <button onclick="girarRoleta('grimorios')">🎲 Girar Roleta</button>
+      <div class="resultado" id="resultado-grimorios"></div>
+    </section>
+
+    <section class="roleta-area">
+      <h2>🛡️ Roleta de Defesas</h2>
+      <button onclick="girarRoleta('defesas')">🎲 Girar Roleta</button>
+      <div class="resultado" id="resultado-defesas"></div>
+    </section>
+
+    <section class="roleta-area">
+      <h2>⚔️ Roleta de Ataques</h2>
+      <button onclick="girarRoleta('ataques')">🎲 Girar Roleta</button>
+      <div class="resultado" id="resultado-ataques"></div>
+    </section>
+  </main>
+
+  <script>
+    const opcoes = {
+      pets: ["Pet X", "Pet Y", "Pet Z", "Pet W", "Pet Nulo"],
+      grimorios: ["Grimório X", "Grimório Y", "Grimório Z", "Grimório Nulo"],
+      defesas: ["Defesa Mágica", "Defesa Física", "Defesa Nula"],
+      ataques: [
+        "Ataque Tirar 10%",
+        "Ataque Tirar 25%",
+        "Ataque Tirar 50%",
+        "Ataque -5",
+        "Ataque -10",
+        "Ataque -25",
+        "Ataque Fracassado",
+        "Roubar Pet",
+        "Roubar Grimório"
+      ]
+    };
+
+    function girarRoleta(tipo) {
+      const resultadoElemento = document.getElementById(`resultado-${tipo}`);
+      const itens = opcoes[tipo];
+
+      let intervalo;
+      let contador = 0;
+      resultadoElemento.textContent = "🎡 Girando...";
+
+      intervalo = setInterval(() => {
+        const sorteioTemporario = itens[Math.floor(Math.random() * itens.length)];
+        resultadoElemento.textContent = `🎲 ${sorteioTemporario}`;
+        contador++;
+        if (contador > 20) { // gira umas 20 vezes antes de parar
+          clearInterval(intervalo);
+          const sorteadoFinal = itens[Math.floor(Math.random() * itens.length)];
+          resultadoElemento.textContent = `🎯 Resultado: ${sorteadoFinal}!`;
+        }
+      }, 100); // a cada 100ms troca o nome
+    }
+  </script>
+
+<section class="regras-area">
+    <h2>📜 Regras da Loja</h2>
+  
+    <h3>🐾 Pets</h3>
+    <p>- Ao girar a roleta de Pets, você pode ganhar um pet especial ou cair no Pet Nulo (nenhum bônus).</p>
+  
+    <h3>📖 Grimórios</h3>
+    <p>- Girando a roleta de Grimórios, você pode obter magias únicas ou cair no Grimório Nulo.</p>
+  
+    <h3>🛡️ Defesas</h3>
+    <p>- As defesas protegem sua base! Podem ser Defesa Mágica, Física ou nenhuma (Defesa Nula).</p>
+  
+    <h3>⚔️ Ataques</h3>
+    <p>- O ataque sorteado define o impacto sobre a base inimiga.</p>
+    <ul style="text-align: left; max-width: 500px; margin: auto;">
+      <li>- <strong>Se o XP da base atacada for maior que 0:</strong> aplica-se redução percentual (10%, 25%, 50%).</li>
+      <li>- <strong>Se o XP for 0 ou nulo:</strong> aplica-se perda fixa (-5, -10 ou -25 pontos).</li>
+      <li>- <strong>Roubo de Pet:</strong> se a base atacada tiver pet, você rouba o pet. Se não tiver, tira 10% do XP ou -10 pontos (se XP nulo).</li>
+      <li>- <strong>Roubo de Grimório:</strong> se a base atacada tiver grimório, você rouba o grimório. Se não tiver, tira 10% do XP ou -10 pontos (se XP nulo).</li>
+      <li>- <strong>Ataque Fracassado:</strong> nada acontece.</li>
+    </ul>
+  
+    <h3>📜 Observações Finais</h3>
+    <p>- Os sorteios são aleatórios.<br>
+    - Cada roleta só pode ser rodada 1 vez a cada ação oficial.<br>
+    - Os efeitos são válidos para as batalhas entre os clãs.</p>
+  </section>
+  
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ranking RPG das Turmas</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'MedievalSharp', cursive;
+      margin: 0;
+      padding: 0;
+      background: url('public/back.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    header {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #bfa76f;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      color: #f4d03f;
+    }
+
+    .btns-header {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-header {
+      padding: 10px 18px;
+      background: #f4d03f;
+      color: #000;
+      font-weight: bold;
+      border-radius: 8px;
+      border: 2px solid #bfa76f;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn-header:hover {
+      background: #ff9a00;
+      color: #000;
+    }
+
+    select {
+      margin-top: 15px;
+      padding: 8px;
+      font-size: 1em;
+      background: #222;
+      color: #f4d03f;
+      border: 2px solid #bfa76f;
+      border-radius: 5px;
+    }
+
+    section {
+      background: rgba(0, 0, 0, 0.7);
+      margin: 20px auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      border: 2px solid #bfa76f;
+      border-radius: 10px;
+    }
+
+    ol, ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid #bfa76f;
+    }
+
+    #alunoList li {
+      cursor: pointer;
+    }
+
+    #top3List li {
+      cursor: default;
+      pointer-events: none;
+      color: #f4d03f;
+    }
+
+    li:hover {
+      color: #f4d03f;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #fichaDetalhes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .ficha-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #f4d03f;
+      margin-bottom: 15px;
+    }
+
+    .barra-xp {
+      width: 80%;
+      height: 20px;
+      background: #333;
+      border: 1px solid #bfa76f;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .xp-preenchido {
+      height: 100%;
+      background: linear-gradient(90deg, #f4d03f, #ff9a00);
+    }
+
+    .ficha-info {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      width: 100%;
+      text-align: left;
+      border: 1px solid #bfa76f;
+    }
+
+    .ficha-info p {
+      margin: 8px 0;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>📜 Registro dos Heróis da Turma</h1>
+
+    <div class="btns-header">
+      <a href="https://trigonometria.cursinhoconteudo.com/" class="btn-header">🔙 Voltar ao Portal</a>
+      <a href="versus.html" class="btn-header">⚔️ Ir para o Confronto de Clãs</a>
+    </div>
+
+    <select id="turmaSelect">
+      <option value="A">🛡️ Turma A</option>
+      <option value="B">⚔️ Turma B</option>
+    </select>
+  </header>
+
+  <section id="ranking">
+    <h2>🏆 Top 3 Guerreiros</h2>
+    <ol id="top3List"></ol>
+  </section>
+
+  <section id="alunos">
+    <h2>🎖️ Lista de Aventureiros</h2>
+    <ul id="alunoList"></ul>
+  </section>
+
+  <div id="fichaModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" onclick="fecharFicha()">×</span>
+      <h2>📖 Ficha do Herói</h2>
+      <div id="fichaDetalhes"></div>
+    </div>
+  </div>
+
+  <section style="text-align: center; margin-top: 40px;">
+    <h2>📝 Envie sua Ficha de Aventureiro</h2>
+    <p>Clique no botão abaixo para acessar o formulário:</p>
+    <a href="https://forms.gle/xrf6kKD8tdfa4Tbd6" target="_blank" class="btn-header">📬 Abrir Formulário</a>
+  </section>
+
+  <script src="public/dadosXP.js"></script>
+  <script>
+    const dados = dadosXP;
+
+    const turmaSelect = document.getElementById("turmaSelect");
+    const alunoList = document.getElementById("alunoList");
+    const top3List = document.getElementById("top3List");
+    const fichaDetalhes = document.getElementById("fichaDetalhes");
+
+    function renderizarTurma(turma) {
+      const alunos = [...dados[turma]].sort((a, b) => b.pontos - a.pontos);
+
+      top3List.innerHTML = "";
+      alunos.slice(0, 3).forEach(aluno => {
+        const li = document.createElement("li");
+        li.textContent = `${aluno.nome} - ${aluno.pontos} XP`;
+        top3List.appendChild(li);
+      });
+
+      alunoList.innerHTML = "";
+      alunos.forEach((aluno, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${index + 1}. ${aluno.nome}`;
+        li.onclick = () => mostrarFicha(aluno);
+        alunoList.appendChild(li);
+      });
+    }
+
+    function mostrarFicha(aluno) {
+      const xpProximoNivel = (aluno.nivel + 1) * 30;
+      const percentualXP = Math.min((aluno.pontos / xpProximoNivel) * 100, 100);
+
+      fichaDetalhes.innerHTML = `
+        <img src="${aluno.avatar}" alt="Avatar de ${aluno.nome}" class="ficha-avatar"/>
+        <div class="barra-xp">
+          <div class="xp-preenchido" style="width:${percentualXP}%"></div>
+        </div>
+        <div class="ficha-info">
+          <p><strong>🧝 Nome:</strong> ${aluno.nome}</p>
+          <p><strong>📚 Escola:</strong> ${aluno.curso}</p>
+          <p><strong>🎓 Classe:</strong> ${aluno.classe}</p>
+          <p><strong>⬆️ Nível:</strong> ${aluno.nivel}</p>
+          <p><strong>✨ Experiência:</strong> ${aluno.pontos} XP</p>
+        </div>
+      `;
+      document.getElementById("fichaModal").classList.remove("hidden");
+    }
+
+    window.fecharFicha = function() {
+      document.getElementById("fichaModal").classList.add("hidden");
+    };
+
+    turmaSelect.addEventListener("change", () => {
+      renderizarTurma(turmaSelect.value);
+    });
+
+    renderizarTurma("A");
+  </script>
+
+</body>
+</html>

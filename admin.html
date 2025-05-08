@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel do Mestre RPG</title>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'MedievalSharp', cursive;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 1em;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 8px;
+      border: 2px solid #bfa76f;
+      background: #f4d03f;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ff9a00;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: #222;
+      color: white;
+      border: 2px solid #bfa76f;
+    }
+
+    th, td {
+      border: 1px solid #bfa76f;
+      padding: 10px;
+      text-align: center;
+    }
+
+    input[type="number"] {
+      width: 80px;
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1em;
+      text-align: center;
+    }
+
+    h1, h2 {
+      color: #f4d03f;
+    }
+
+    #loginContainer, #painel {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #bfa76f;
+      max-width: 500px;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loginContainer">
+    <h2>🔐 Área Administrativa</h2>
+    <input type="password" id="senha" placeholder="Digite a senha de admin">
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <div id="painel" class="hidden">
+    <h2>📊 Painel do Mestre</h2>
+    <button onclick="logout()">Sair</button>
+    <table id="tabela" border="1" cellpadding="5"></table>
+    <button onclick="salvarAlteracoes()">💾 Salvar Alterações</button>
+  </div>
+
+  <script>
+    const SENHA_ADMIN = "1234"; // sua senha local
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1VLsqmgkH7YQ8_F0LdjSHk-_suYV9ioyCKCWka_ZGKQY/gviz/tq?tq=SELECT%20*&sheet=P%C3%A1gina1";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbBSPnw5MWexZUg6w85sW7Qao-nFwJKcZsUwPp3eiXlp_dpo9WOFzJhT7lC-nn-qvQ/exec";
+
+    function login() {
+      const senha = document.getElementById("senha").value;
+      if (senha === SENHA_ADMIN) {
+        localStorage.setItem("usuarioLogado", "true");
+        document.getElementById("loginContainer").classList.add("hidden");
+        document.getElementById("painel").classList.remove("hidden");
+        carregarPlanilha();
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+      location.reload();
+    }
+
+    function carregarPlanilha() {
+      fetch(SHEET_URL)
+        .then(res => res.text())
+        .then(text => {
+          const json = JSON.parse(text.substring(47).slice(0, -2));
+          const table = document.getElementById("tabela");
+          const cols = json.table.cols.map(col => col.label);
+          const rows = json.table.rows;
+
+          table.innerHTML = "";
+          const header = table.insertRow();
+          cols.forEach(col => {
+            const th = document.createElement("th");
+            th.textContent = col;
+            header.appendChild(th);
+          });
+
+          rows.forEach((row) => {
+            const tr = table.insertRow();
+            row.c.forEach((cell, colIndex) => {
+              const td = tr.insertCell();
+              if (colIndex === 0) {
+                td.textContent = cell ? cell.v : "";
+              } else {
+                td.innerHTML = `<input type="number" value="${cell ? cell.v : 0}" />`;
+              }
+            });
+          });
+        });
+    }
+
+    function salvarAlteracoes() {
+      const tabela = document.getElementById("tabela");
+      const linhas = tabela.rows;
+      const dados = { "Sala A": {}, "Sala B": {} };
+
+      for (let i = 1; i < linhas.length; i++) {
+        const atributo = linhas[i].cells[0].textContent;
+        const valorA = linhas[i].cells[1].querySelector("input").value;
+        const valorB = linhas[i].cells[2].querySelector("input").value;
+        dados["Sala A"][atributo] = parseInt(valorA);
+        dados["Sala B"][atributo] = parseInt(valorB);
+      }
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(dados),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.text())
+      .then(msg => {
+        alert("✅ " + msg);
+        carregarPlanilha();
+      })
+      .catch(err => {
+        alert("❌ Erro ao salvar: " + err);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("usuarioLogado") === "true") {
+        document.getElementById("loginContainer").classList.add("hidden");
+        document.getElementById("painel").classList.remove("hidden");
+        carregarPlanilha();
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -90,15 +90,21 @@
     <script id="cid0020000406505402870" data-cfasync="false" async src="//st.chatango.com/js/gz/emb.js" style="width: 250px;height: 350px;">{"handle":"claturmaa","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}</script>
   </div>
 
-  <script src="public/dadosXP.js"></script>
   <script>
-    function calcularXP(turma) {
-      return dadosXP[turma].reduce((total, aluno) => {
-        return total + aluno.pontos + (aluno.nivel * 200);
-      }, 0);
-    }
-
-    document.getElementById("xpA").innerHTML = `XP Coletivo: <strong>${calcularXP("A")}</strong>`;
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1VLsqmgkH7YQ8_F0LdjSHk-_suYV9ioyCKCWka_ZGKQY/gviz/tq?tq=SELECT%20B&sheet=DadosSala";
+  
+    fetch(SHEET_URL)
+      .then(res => res.text())
+      .then(text => {
+        const json = JSON.parse(text.substring(47).slice(0, -2));
+        const valor = json.table.rows[0].c[0]?.v || 0;
+        document.getElementById("xpA").innerHTML = `XP Coletivo: <strong>${valor}</strong>`;
+      })
+      .catch(err => {
+        console.error("Erro ao carregar dados:", err);
+        document.getElementById("xpA").innerHTML = "Erro ao carregar XP";
+      });
   </script>
+  
 </body>
 </html>

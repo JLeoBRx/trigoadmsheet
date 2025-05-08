@@ -71,6 +71,32 @@
       margin-bottom: 20px;
       font-size: 1.2em;
     }
+    .pets-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 20px auto;
+  max-width: 400px;
+}
+
+.pet {
+  text-align: center;
+  margin: 10px;
+}
+
+.pet-img {
+  width: 60px;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid #bfa76f;
+}
+
+.pet-qtd {
+  margin-top: 5px;
+  font-weight: bold;
+  color: #f4d03f;
+}
+
   </style>
 </head>
 
@@ -83,6 +109,31 @@
   <div class="lado" id="turmaB">
     <h2 class="titulo-clan">⚔️ Clã da Turma B</h2>
     <img src="public/base0.png" alt="Base da Turma B" class="base-img">
+
+    <div class="pets-container">
+      <div class="pet">
+        <img src="public/cat.png" alt="Gato" class="pet-img">
+        <div class="pet-qtd" id="petB-cat">x0</div>
+      </div>
+      <div class="pet">
+        <img src="public/dog.png" alt="Cachorro" class="pet-img">
+        <div class="pet-qtd" id="petB-dog">x0</div>
+      </div>
+      <div class="pet">
+        <img src="public/dragao.png" alt="Dragão" class="pet-img">
+        <div class="pet-qtd" id="petB-dragao">x0</div>
+      </div>
+      <div class="pet">
+        <img src="public/aguia.png" alt="Águia" class="pet-img">
+        <div class="pet-qtd" id="petB-aguia">x0</div>
+      </div>
+      <div class="pet">
+        <img src="public/leao.png" alt="Leão" class="pet-img">
+        <div class="pet-qtd" id="petB-leao">x0</div>
+      </div>
+    </div>
+    
+    
     <div class="xp-saldo" id="xpB">XP Coletivo: <strong>0000</strong></div>
 
 
@@ -91,19 +142,39 @@
   </div>
 
   <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1VLsqmgkH7YQ8_F0LdjSHk-_suYV9ioyCKCWka_ZGKQY/gviz/tq?tq=SELECT%20C&sheet=DadosSala";
-  
-    fetch(SHEET_URL)
-      .then(res => res.text())
-      .then(text => {
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        const valor = json.table.rows[0].c[0]?.v || 0;
-        document.getElementById("xpB").innerHTML = `XP Coletivo: <strong>${valor}</strong>`;
-      })
-      .catch(err => {
-        console.error("Erro ao carregar dados:", err);
-        document.getElementById("xpB").innerHTML = "Erro ao carregar XP";
-      });
+  const PETS_XP_URL = "https://docs.google.com/spreadsheets/d/1VLsqmgkH7YQ8_F0LdjSHk-_suYV9ioyCKCWka_ZGKQY/gviz/tq?tq=SELECT%20C&sheet=DadosSala";
+
+fetch(PETS_XP_URL)
+  .then(res => res.text())
+  .then(text => {
+    const json = JSON.parse(text.substring(47).slice(0, -2));
+    const linhas = json.table.rows;
+
+    // XP Coletivo
+    const xp = linhas[0]?.c[0]?.v || 0;
+    document.getElementById("xpB").innerHTML = `XP Coletivo: <strong>${xp}</strong>`;
+
+    // Pets
+    const ids = ["cat", "dog", "dragao", "leao", "aguia"];
+    ids.forEach((id, i) => {
+      const qtd = linhas[i + 1]?.c[0]?.v || 0;
+      const elQtd = document.getElementById(`petB-${id}`);
+      const elPet = elQtd?.closest(".pet");
+
+      if (elQtd && elPet) {
+        if (qtd === 0) {
+          elPet.style.display = "none"; // Esconde o pet se for 0
+        } else {
+          elQtd.textContent = `x${qtd}`;
+          elPet.style.display = "block"; // Garante exibição se > 0
+        }
+      }
+    });
+  })
+  .catch(err => {
+    console.error("Erro ao carregar dados da Turma B:", err);
+    document.getElementById("xpB").innerHTML = "Erro ao carregar XP";
+  });
   </script>
   
 </body>

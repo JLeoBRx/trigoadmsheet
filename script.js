@@ -1,14 +1,5 @@
-const dados = {
-    A: [
-      { nome: "Alice", pontos: 120, nivel: 5, curso: "Engenharia", avatar: "public/avatars/alice.png" },
-      { nome: "Bruno", pontos: 110, nivel: 4, curso: "Medicina", avatar: "public/avatars/bruno.png" }
-    ],
-    B: [
-      { nome: "Carlos", pontos: 130, nivel: 6, curso: "Direito", avatar: "public/avatars/carlos.png" },
-      { nome: "Diana", pontos: 100, nivel: 3, curso: "Design", avatar: "public/avatars/diana.png" }
-    ]
-  };
-  
+const dados = dadosXP;
+
   const turmaSelect = document.getElementById("turmaSelect");
   const alunoList = document.getElementById("alunoList");
   const top3List = document.getElementById("top3List");
@@ -37,6 +28,7 @@ const dados = {
   }
   
   function mostrarFicha(aluno) {
+    console.log("Abrindo ficha para:", aluno.nome);
     const xpProximoNivel = (aluno.nivel + 1) * 30;
     const percentualXP = Math.min((aluno.pontos / xpProximoNivel) * 100, 100);
   
@@ -53,13 +45,13 @@ const dados = {
         <p><strong>✨ Experiência:</strong> ${aluno.pontos} XP</p>
       </div>
     `;
-    document.getElementById("fichaModal").classList.remove("hidden");
-
+  
+    const modal = document.getElementById("fichaModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("show");
   }
   
-  function fecharFicha() {
-    document.getElementById("fichaModal").classList.add("hidden");
-  }
+  
   
   const opcoes = {
     pets: ["Pet X", "Pet Y", "Pet Z", "Pet W", "Pet Nulo"],
@@ -96,4 +88,11 @@ const dados = {
   });
   
   renderizarTurma("A");
+
+  window.fecharFicha = function() {
+    const modal = document.getElementById("fichaModal");
+    modal.classList.remove("show");
+    modal.classList.add("hidden");
+  };
+  
   

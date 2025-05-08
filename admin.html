@@ -138,7 +138,41 @@
     <li>Roleta de Defesas: <strong>40 XP</strong></li>
     <li>Roleta de Ataques: <strong>90 XP</strong></li>
   </ul>
+
+  
+  <section class="explicacoes">
+    <h2>📖 Efeitos dos Itens</h2>
+  
+    <h3>🐾 Pets</h3>
+    <ul>
+      <li><strong>🐱 Gato:</strong> Gera automaticamente <strong>+5 XP por dia</strong> para a turma.</li>
+      <li><strong>🐶 Cachorro:</strong> Concede <strong>+25 XP por semana</strong> para a turma.</li>
+      <li><strong>🐉 Dragão:</strong> Causa <strong>-10 XP</strong> à outra turma <strong>por dia</strong>.</li>
+      <li><strong>🦁 Leão:</strong> Causa <strong>-50 XP</strong> à outra turma <strong>por semana</strong>.</li>
+      <li><strong>🦅 Águia:</strong> Aumenta em <strong>+10%</strong> o XP total da turma <strong>por semana</strong>.</li>
+    </ul>
+  
+    <h3>📜 Grimórios</h3>
+    <ul>
+      <li><strong>Grimório 1 a 5:</strong> Cada grimório libera uma <strong>magia única</strong>, como:
+        <ul>
+          <li>🌀 Teleporte: Move 25% de XP de uma sala para outra.</li>
+          <li>🧲 Imã: Rouba todos os Pets da outra turma por uma semana.</li>
+          <li>🛡️ Paralisar: Impede 3 alunos de ganhar XP na outra sala durante uma semana</li>
+          <li>🔥 Oferenda: Ganha 300 XP sacrifiando 3 Pets.</li>
+          <li>💫 Benção: Dobra o XP de três alunos.</li>
+    </ul>
+  
+    <h3>🛡️ Defesas</h3>
+    <ul>
+      <li><strong>Defesa Mágica:</strong> Anula uma carta de Teleporte, Imã ou Paralisação.</li>
+      <li><strong>Defesa Física:</strong> Anula o dano de um ataque físico.</li>
+    </ul>
+  </section>
+  
 </div>
+
+
 
   <script>
     const SENHA_ADMIN = "1234";
@@ -220,74 +254,76 @@
     }
 
     const opcoesRoleta = {
-      Pets: ["Pet1","Pet2","Pet3","Pet4","Pet5","Pet Nulo"],
-      Grimórios: ["Grimório1","Grimório2","Grimório3","Grimório4","Grimório5","Grimório Nulo"],
+      Pets: ["Gato","Cachorro","Dragão","Leão","Águia","Pet Nulo"],
+      Grimórios: ["Teleporte","Imã","Paralisar","Oferenda","Benção","Grimório Nulo"],
       Defesas: ["Defesa Mágica","Defesa Física","Defesa Nula"],
       Ataques: [
         "Ataque Tirar 10%","Ataque Tirar 25%","Ataque Tirar 50%",
         "Ataque -5","Ataque -10","Ataque -25",
-        "Ataque Fracassado","Roubar Pet","Roubar Grimório"
+        "Ataque Fracassado"
       ]
     };
 
     const custoRoleta = { Pets:50, Grimórios:60, Defesas:40, Ataques:90 };
-
     function sortear(tipo, sala) {
   const msg = document.getElementById("roleta-msg");
   msg.textContent = `🎡 Girando roleta de ${tipo}...`;
 
-  // custos e opções já definidos em opcoesRoleta e custoRoleta
+  // Definindo o custo e opções da roleta
   const tabela = document.getElementById("tabela");
-  const linhaXP = 1;                // index da linha XP (planilha linha 2)
-  const colXP   = sala === "Sala A" ? 1 : 2;
+  const linhaXP = 1; // index da linha XP (planilha linha 2)
+  const colXP = sala === "Sala A" ? 1 : 2;
   const desconto = custoRoleta[tipo];
-  const itens    = opcoesRoleta[tipo];
+  const itens = opcoesRoleta[tipo];
 
   let giro = 0;
   const intervalo = setInterval(() => {
-    msg.textContent = `🎲 ${itens[Math.floor(Math.random()*itens.length)]}`;
+    msg.textContent = `🎲 ${itens[Math.floor(Math.random() * itens.length)]}`;
     if (++giro >= 20) {
       clearInterval(intervalo);
-      const resultado = itens[Math.floor(Math.random()*itens.length)];
+      const resultado = itens[Math.floor(Math.random() * itens.length)];
       msg.textContent = `🎯 Resultado: ${resultado} (${sala})`;
 
-      // 1) descontar XP fixo
+      // Se for "Pet Nulo" ou "Grimório Nulo", não realiza alteração de XP nem sorteia item
+      if (resultado === "Pet Nulo" || resultado === "Grimório Nulo") {
+        msg.textContent = `🎯 Resultado: ${resultado} (Sem efeitos)`;
+        return; // Sai da função sem aplicar o desconto ou incrementar
+      }
+
+      // 1) Descontar XP fixo
       const inpXP = tabela.rows[linhaXP].cells[colXP].querySelector("input");
-      let xp = parseInt(inpXP.value)||0;
+      let xp = parseInt(inpXP.value) || 0;
       inpXP.value = Math.max(0, xp - desconto);
 
-      // 2) determinar a linha fixa na tabela para o resultado:
+      // 2) Determinar a linha fixa na tabela para o resultado
       let rowIndex; // índice em tabela.rows
       if (tipo === "Pets") {
-        // Pet1 → tabela.rows[2], Pet2→3, ..., Pet5→6
         rowIndex = 2 + opcoesRoleta.Pets.indexOf(resultado);
       } else if (tipo === "Grimórios") {
-        // Grimório1→7, Grimório2→8, ..., Grimório5→11
         rowIndex = 7 + opcoesRoleta["Grimórios"].indexOf(resultado);
       } else if (tipo === "Defesas") {
-        // mapeamento explícito
         const mapaDefesas = {
           "Defesa Mágica": 14,
           "Defesa Física": 13,
-          "Defesa Nula":    null  // não incrementa
+          "Defesa Nula": null
         };
         rowIndex = mapaDefesas[resultado];
       } else if (tipo === "Ataques") {
-        // Opcional: se quiser incrementar algo para Ataques também
-        rowIndex = null;
+        rowIndex = null; // Este pode ser expandido conforme necessário
       }
 
-      // 3) se houver linha válida, incrementar contagem
+      // 3) Se houver linha válida, incrementar contagem
       if (rowIndex != null) {
         const inpItem = tabela.rows[rowIndex].cells[colXP].querySelector("input");
-        inpItem.value = (parseInt(inpItem.value)||0) + 1;
+        inpItem.value = (parseInt(inpItem.value) || 0) + 1;
       }
 
-      // 4) e por fim, salva tudo
+      // 4) Salvar as alterações
       salvarAlteracoes();
     }
   }, 80);
 }
+
 
 
     function aplicarAtaque() {

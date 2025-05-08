@@ -96,10 +96,6 @@
       color: #f4d03f;
     }
 
-    .hidden {
-      display: none;
-    }
-
     #fichaDetalhes {
       display: flex;
       flex-direction: column;
@@ -142,19 +138,56 @@
       margin: 8px 0;
       font-size: 1.1em;
     }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      border: 2px solid #f4d03f;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #f4d03f;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #ff9a00;
+    }
   </style>
 </head>
-
 <body>
-
   <header>
     <h1>📜 Registro dos Heróis da Turma</h1>
-
     <div class="btns-header">
       <a href="https://trigonometria.cursinhoconteudo.com/" class="btn-header">🔙 Voltar ao Portal</a>
       <a href="versus.html" class="btn-header">⚔️ Ir para o Confronto de Clãs</a>
     </div>
-
     <select id="turmaSelect">
       <option value="A">🛡️ Turma A</option>
       <option value="B">⚔️ Turma B</option>
@@ -171,7 +204,7 @@
     <ul id="alunoList"></ul>
   </section>
 
-  <div id="fichaModal" class="modal hidden">
+  <div id="fichaModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="fecharFicha()">×</span>
       <h2>📖 Ficha do Herói</h2>
@@ -186,63 +219,6 @@
   </section>
 
   <script src="public/dadosXP.js"></script>
-  <script>
-    const dados = dadosXP;
-
-    const turmaSelect = document.getElementById("turmaSelect");
-    const alunoList = document.getElementById("alunoList");
-    const top3List = document.getElementById("top3List");
-    const fichaDetalhes = document.getElementById("fichaDetalhes");
-
-    function renderizarTurma(turma) {
-      const alunos = [...dados[turma]].sort((a, b) => b.pontos - a.pontos);
-
-      top3List.innerHTML = "";
-      alunos.slice(0, 3).forEach(aluno => {
-        const li = document.createElement("li");
-        li.textContent = `${aluno.nome} - ${aluno.pontos} XP`;
-        top3List.appendChild(li);
-      });
-
-      alunoList.innerHTML = "";
-      alunos.forEach((aluno, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${index + 1}. ${aluno.nome}`;
-        li.onclick = () => mostrarFicha(aluno);
-        alunoList.appendChild(li);
-      });
-    }
-
-    function mostrarFicha(aluno) {
-      const xpProximoNivel = (aluno.nivel + 1) * 30;
-      const percentualXP = Math.min((aluno.pontos / xpProximoNivel) * 100, 100);
-
-      fichaDetalhes.innerHTML = `
-        <img src="${aluno.avatar}" alt="Avatar de ${aluno.nome}" class="ficha-avatar"/>
-        <div class="barra-xp">
-          <div class="xp-preenchido" style="width:${percentualXP}%"></div>
-        </div>
-        <div class="ficha-info">
-          <p><strong>🧝 Nome:</strong> ${aluno.nome}</p>
-          <p><strong>📚 Escola:</strong> ${aluno.curso}</p>
-          <p><strong>🎓 Classe:</strong> ${aluno.classe}</p>
-          <p><strong>⬆️ Nível:</strong> ${aluno.nivel}</p>
-          <p><strong>✨ Experiência:</strong> ${aluno.pontos} XP</p>
-        </div>
-      `;
-      document.getElementById("fichaModal").classList.remove("hidden");
-    }
-
-    window.fecharFicha = function() {
-      document.getElementById("fichaModal").classList.add("hidden");
-    };
-
-    turmaSelect.addEventListener("change", () => {
-      renderizarTurma(turmaSelect.value);
-    });
-
-    renderizarTurma("A");
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Painel do Mestre RPG</title>
+  <title>Painel do Mestre de Clãs</title>
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <style>
     body {
@@ -68,8 +68,16 @@
       padding: 20px;
       border-radius: 15px;
       border: 2px solid #bfa76f;
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
+    }
+
+    select {
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1em;
+      padding: 8px;
+      border-radius: 6px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -83,15 +91,31 @@
   </div>
 
   <div id="painel" class="hidden">
-    <h2>📊 Painel do Mestre</h2>
+    <h2>📊 Painel do Mestre de Clãs</h2>
     <button onclick="logout()">Sair</button>
-    <table id="tabela" border="1" cellpadding="5"></table>
+    <table id="tabela"></table>
     <button onclick="salvarAlteracoes()">💾 Salvar Alterações</button>
+    <button onclick="zerarTudo()">🧹 Zerar Tudo</button>
+
+    <h3>⚔️ Simular Ataque</h3>
+    <select id="alvo">
+      <option value="Sala A">Atacar Sala A</option>
+      <option value="Sala B">Atacar Sala B</option>
+    </select>
+    <select id="efeito">
+      <option value="-5">-5 pontos</option>
+      <option value="-10">-10 pontos</option>
+      <option value="-25">-25 pontos</option>
+      <option value="-10%">-10% XP</option>
+      <option value="-25%">-25% XP</option>
+      <option value="-50%">-50% XP</option>
+    </select>
+    <button onclick="aplicarAtaque()">⚔️ Aplicar</button>
   </div>
 
   <script>
-    const SENHA_ADMIN = "1234"; // sua senha local
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1VLsqmgkH7YQ8_F0LdjSHk-_suYV9ioyCKCWka_ZGKQY/gviz/tq?tq=SELECT%20*&sheet=P%C3%A1gina1";
+    const SENHA_ADMIN = "1234";
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/1VLsqmgkH7YQ8_F0LdjSHk-_suYV9ioyCKCWka_ZGKQY/gviz/tq?tq=SELECT%20*&sheet=DadosSala";
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbBSPnw5MWexZUg6w85sW7Qao-nFwJKcZsUwPp3eiXlp_dpo9WOFzJhT7lC-nn-qvQ/exec";
 
     function login() {
@@ -143,33 +167,60 @@
     }
 
     function salvarAlteracoes() {
-      const tabela = document.getElementById("tabela");
-      const linhas = tabela.rows;
-      const dados = { "Sala A": {}, "Sala B": {} };
+  const tabela = document.getElementById("tabela");
+  const linhas = tabela.rows;
+  const dados = { "Sala A": {}, "Sala B": {} };
 
-      for (let i = 1; i < linhas.length; i++) {
-        const atributo = linhas[i].cells[0].textContent;
-        const valorA = linhas[i].cells[1].querySelector("input").value;
-        const valorB = linhas[i].cells[2].querySelector("input").value;
-        dados["Sala A"][atributo] = parseInt(valorA);
-        dados["Sala B"][atributo] = parseInt(valorB);
+  for (let i = 1; i < linhas.length; i++) {
+    const atributo = linhas[i].cells[0].textContent;
+    const valorA = linhas[i].cells[1].querySelector("input").value;
+    const valorB = linhas[i].cells[2].querySelector("input").value;
+    dados["Sala A"][atributo] = parseInt(valorA);
+    dados["Sala B"][atributo] = parseInt(valorB);
+  }
+
+  fetch("https://script.google.com/macros/s/AKfycbyQo2J5NwCJNOt3658fy4mXwwTv2hSE1z98CthefX-YrV3Gnt-kWwRROv4NkJMfUCLC/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(dados)
+  });
+
+  alert("✅ Dados enviados. Verifique na planilha!");
+}
+
+
+    function zerarTudo() {
+      if (confirm("Deseja zerar todos os valores?")) {
+        const inputs = document.querySelectorAll("input[type='number']");
+        inputs.forEach(input => input.value = 0);
       }
+    }
 
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify(dados),
-        headers: {
-          "Content-Type": "application/json"
+    function aplicarAtaque() {
+      const alvo = document.getElementById("alvo").value;
+      const efeito = document.getElementById("efeito").value;
+      const tabela = document.getElementById("tabela");
+
+      for (let i = 1; i < tabela.rows.length; i++) {
+        const atributo = tabela.rows[i].cells[0].textContent;
+        if (atributo === "XP") {
+          const cellIndex = alvo === "Sala A" ? 1 : 2;
+          const input = tabela.rows[i].cells[cellIndex].querySelector("input");
+          let valor = parseInt(input.value);
+
+          if (efeito.includes("%")) {
+            const percentual = parseInt(efeito);
+            valor = Math.max(0, Math.floor(valor * (1 - percentual / 100)));
+          } else {
+            valor = Math.max(0, valor + parseInt(efeito));
+          }
+
+          input.value = valor;
         }
-      })
-      .then(res => res.text())
-      .then(msg => {
-        alert("✅ " + msg);
-        carregarPlanilha();
-      })
-      .catch(err => {
-        alert("❌ Erro ao salvar: " + err);
-      });
+      }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -180,6 +231,5 @@
       }
     });
   </script>
-
 </body>
 </html>
